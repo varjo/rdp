@@ -1,0 +1,31 @@
+!process 0 0 svchost.exe
+    look for 0x4ec
+.process /i /p 85899b30
+.reload /f termdd.sys
+.reload /f ntdll.dll
+.reload /f ICAAPI.dll
+.reload /f rdpwsx.dll
+.reload /f termsrv.dll
+
+# useful breakpoints
+bp termdd!IcaChannelInputInternal+0x378 ".printf \"IcaChannelInputInternal - size: %x \",eax; g"
+bp termdd!IcaChannelInputInternal+0x380 ".printf \"addr: %x \\n\",eax; g"
+bp termdd!_IcaAllocateChannel+0x12 ".printf \"_IcaAllocateChannel     - size: %x\",edi; g"
+bp termdd!_IcaAllocateChannel+0x1c ".printf \" addr: %x \\n\",eax; g"
+bp termdd!_IcaAllocateChannel+0x5 ".printf \"[+] ALLOCATING CHANNEL: %ma \\n\",poi(ebp+0x10); g"
+bp termdd!_IcaFreeChannel+0x3 ".printf \"[+] FREEING CHANNEL: %ma\\n\",POI(ebp+0x8)+0x94;.printf \"_IcaFreeChannel: %x\\n\",POI(ebp+0x8);g"
+
+
+# not as useful breakpoints 
+bp termdd!IcaBufferAlloc+0x5 ".printf \"IcaBufferAlloc: %x \\n\",poi(ebp+0x14); g"
+bp termdd!IcaStackAllocatePoolWithTag+0x8 ".printf \"IcaStackAllocatePoolWithTag: %x \\n\",poi(ebp+0xc); g"
+bp termdd!IcaStackAllocatePool+0xa ".printf \"IcaStackAllocatePool: %x \\n\",poi(ebp+0xc); g"
+bp termdd!IcaBindVirtualChannels+0xD3 "dc edi L2; k" # find callstack of IcaBindVirtualChannel
+bp termdd!IcaCreateChannel "k"                       # callstack for IcaCreateChannel
+bp rdpwsx!IoThreadFunc+0x40
+bp rdpwsx!MCSPortData+0x26 "dd edi; g"
+
+termdd!IcaCreateChannel+0x40 ".printf \"%d\\n\",POI(eax)" # prints channel count in connection structure 
+bp termdd!_IcaFindVcBind+0xF "dc edi" # figuring out channel name 
+
+

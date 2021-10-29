@@ -1,0 +1,80 @@
+IcaCreateChannel: callstack
+abc92920 8b9e4177 termdd!IcaCreateChannel
+abc92950 8b9dd127 termdd!IcaCreate+0x13d
+abc92968 82a88f87 termdd!IcaDispatch+0xf3
+abc92980 82ca2dab nt!IofCallDriver+0x63
+abc92a60 82c81ff8 nt!IopParseDevice+0xf08
+abc92adc 82c92674 nt!ObpLookupObjectName+0x510
+abc92b38 82c88f6b nt!ObOpenObjectByName+0x165
+abc92bb4 82cacd69 nt!IopCreateFile+0x6c3
+abc92c00 82a8fa6a nt!NtCreateFile+0x34
+abc92c00 77636c04 nt!KiSystemServicePostCall
+0382e754 7763515c ntdll!KiFastSystemCallRet
+0382e758 703a14e5 ntdll!ZwCreateFile+0xc
+0382e7b4 703a1b09 ICAAPI!_IcaOpen+0x59
+0382e7d4 703a3600 ICAAPI!_IcaStackOpen+0x79
+0382e7f8 6f9d8861 ICAAPI!IcaChannelOpen+0x3d
+0382e828 6f9d818c rdpwsx!MCSCreateDomain+0x8a
+0382e844 6f9d507e rdpwsx!GCCConferenceInit+0x24
+0382e860 6f9d5a3f rdpwsx!TSrvBindStack+0x19
+0382e878 6f9d55f1 rdpwsx!TSrvAllocInfo+0x42
+0382e894 6f9d44da rdpwsx!TSrvStackConnect+0x26
+0382e8b8 6fbdfc6e rdpwsx!WsxIcaStackIoControl+0x19b
+WARNING: Frame IP not in any known module. Following frames may be wrong.
+0382e90c 703a1f28 0x6fbdfc6e
+0382e93c 703a28f5 ICAAPI!_IcaStackIoControl+0x33
+0382ef24 703a3264 ICAAPI!_IcaStackWaitForIca+0x40
+0382f52c 6fbde3f0 ICAAPI!IcaStackConnectionAccept+0x19d
+0382f834 704d0de7 0x6fbde3f0
+0382f9a4 704d200b termsrv!CConnectionEx::Accept+0x20e
+0382f9b8 704d2343 termsrv!CListenerEx::TransferWorkItem+0x21
+0382f9d4 766aef6c termsrv!CListenerEx::staticTransferWorkItem+0x1c
+0382f9e0 77653618 0x766aef6c
+0382fa20 776535eb ntdll!__RtlUserThreadStart+0x70
+0382fa38 00000000 ntdll!_RtlUserThreadStart+0x1b
+
+crash callstack:
+
+kd> k
+ChildEBP RetAddr  
+8ab0ac04 82b31e27 nt!RtlpBreakWithStatusInstruction
+8ab0ac54 82b32924 nt!KiBugCheckDebugBreak+0x1c
+8ab0b018 82a95d57 nt!KeBugCheck2+0x68a
+8ab0b018 82ae17a2 nt!KiTrap0E+0x39f
+8ab0b0c0 8b9dada2 nt!ExDeleteResourceLite+0x87
+8ab0b0d4 8b9db08e termdd!_IcaFreeChannel+0x44
+8ab0b0f0 8b9dba62 termdd!IcaDereferenceChannel+0x34
+8ab0b12c 8b9dc458 termdd!IcaChannelInputInternal+0x47c
+8ab0b154 81e970e9 termdd!IcaChannelInput+0x3c
+8ab0b18c 81e97151 RDPWD!SignalBrokenConnection+0x40
+8ab0b1a4 8b9dc483 RDPWD!MCSIcaChannelInput+0x55
+8ab0b1d0 81e5d76a termdd!IcaChannelInput+0x67
+8ab0ba10 8b9de671 tdtcp!TdInputThread+0x40e
+8ab0ba2c 8b9de780 termdd!_IcaDriverThread+0x53
+8ab0ba54 8b9df22f termdd!_IcaStartInputThread+0x6c
+8ab0ba94 8b9dcf9f termdd!IcaDeviceControlStack+0x629
+8ab0bac4 8b9dd173 termdd!IcaDeviceControl+0x59
+8ab0badc 82a88f87 termdd!IcaDispatch+0x13f
+8ab0baf4 82c86eec nt!IofCallDriver+0x63
+8ab0bb14 82c8a2a8 nt!IopSynchronousServiceTail+0x1f8
+8ab0bbd0 82cd17d3 nt!IopXxxControlFile+0x82f
+8ab0bc04 82a8fa6a nt!NtDeviceIoControlFile+0x2a
+8ab0bc04 77636c04 nt!KiSystemServicePostCall
+0277f834 776353ec ntdll!KiFastSystemCallRet
+0277f838 703a1948 ntdll!NtDeviceIoControlFile+0xc
+0277f874 703a25f1 ICAAPI!IcaIoControl+0x29
+0277f8a4 766aef6c ICAAPI!IcaInputThreadUserMode+0x37
+0277f8b0 77653618 kernel32!BaseThreadInitThunk+0xe
+0277f8f0 776535eb ntdll!__RtlUserThreadStart+0x70
+0277f908 00000000 ntdll!_RtlUserThreadStart+0x1b
+
+_IcaFreeChannel is the crash 
+
+_IcaAllocateTable : malloc size 200 
+
+**** writing to channel 1005 allows for arbitrary heap allocation size 
+    - IcaChannelInputInternal is the culprit
+    - what is 1005? RDPSND
+    - writing 0x12c allocates 14c 
+
+        
