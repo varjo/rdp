@@ -1,2 +1,2 @@
 # rdp
-Old code; no idea what's going on anymore. This used to blue screen machines thx to termdd.sys. Hoping to recover old notes someday. 
+Python code that implements an RDP connection sequence and triggers the conditions for CVE-2019-0708 aka BlueKeep. Additional exploitation is not included here as it just triggers a BSOD for POC purposes. 
